@@ -1,6 +1,10 @@
 package com.hmily.litespring.beans.factory.support;
 
 import com.hmily.litespring.beans.BeanDefinition;
+import com.hmily.litespring.beans.PropertyValue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by zyzhmily on 2018/7/14.
@@ -18,6 +22,8 @@ public class GenericBeanDefinition implements BeanDefinition{
     private boolean singleton=true;
 
     private boolean prototype=false;
+
+    private List<PropertyValue> propertyValueList=new ArrayList<PropertyValue>();
 
     public GenericBeanDefinition(String id, String beanClassName) {
         this.id = id;
@@ -52,6 +58,10 @@ public class GenericBeanDefinition implements BeanDefinition{
         return this.beanClassName;
     }
 
+    @Override
+    public List<PropertyValue> getPropertyValues() {
+        return this.propertyValueList;
+    }
 
 
 }

@@ -1,5 +1,7 @@
 package com.hmily.litespring.beans;
 
+import java.util.List;
+
 /**
  * Created by zyzhmily on 2018/7/14.
  */
@@ -20,4 +22,6 @@ public interface BeanDefinition {
     public void setScope(String scope);
 
     public String getBeanClassName();
+
+    public List<PropertyValue> getPropertyValues();
 }

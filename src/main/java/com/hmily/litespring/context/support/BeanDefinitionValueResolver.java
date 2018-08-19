@@ -2,6 +2,7 @@ package com.hmily.litespring.context.support;
 
 import com.hmily.litespring.beans.RuntimeBeanReference;
 import com.hmily.litespring.beans.TypeStringValue;
+import com.hmily.litespring.beans.factory.BeanFactory;
 import com.hmily.litespring.beans.factory.support.DefaultBeanFactory;
 
 /**
@@ -9,9 +10,9 @@ import com.hmily.litespring.beans.factory.support.DefaultBeanFactory;
  */
 public class BeanDefinitionValueResolver {
 
-    private final DefaultBeanFactory beanFactory;
+    private final BeanFactory beanFactory;
 
-    public BeanDefinitionValueResolver(DefaultBeanFactory beanFactory) {
+    public BeanDefinitionValueResolver(BeanFactory  beanFactory) {
            this.beanFactory=beanFactory;
     }
 

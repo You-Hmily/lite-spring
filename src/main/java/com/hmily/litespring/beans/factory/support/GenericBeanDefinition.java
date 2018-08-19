@@ -1,6 +1,7 @@
 package com.hmily.litespring.beans.factory.support;
 
 import com.hmily.litespring.beans.BeanDefinition;
+import com.hmily.litespring.beans.ConstructorArgument;
 import com.hmily.litespring.beans.PropertyValue;
 
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ public class GenericBeanDefinition implements BeanDefinition{
     private boolean prototype=false;
 
     private List<PropertyValue> propertyValueList=new ArrayList<PropertyValue>();
+
+    private ConstructorArgument constructorArgument=new ConstructorArgument();
 
     public GenericBeanDefinition(String id, String beanClassName) {
         this.id = id;
@@ -61,6 +64,21 @@ public class GenericBeanDefinition implements BeanDefinition{
     @Override
     public List<PropertyValue> getPropertyValues() {
         return this.propertyValueList;
+    }
+
+    @Override
+    public ConstructorArgument getConstructorArgument() {
+        return this.constructorArgument;
+    }
+
+    @Override
+    public String getID() {
+        return this.id;
+    }
+
+    @Override
+    public boolean hasConstructorArgumentValues() {
+        return !this.constructorArgument.isEmpty();
     }
 
 

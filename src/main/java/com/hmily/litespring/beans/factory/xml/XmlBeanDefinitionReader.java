@@ -1,9 +1,6 @@
 package com.hmily.litespring.beans.factory.xml;
 
-import com.hmily.litespring.beans.BeanDefinition;
-import com.hmily.litespring.beans.PropertyValue;
-import com.hmily.litespring.beans.RuntimeBeanReference;
-import com.hmily.litespring.beans.TypeStringValue;
+import com.hmily.litespring.beans.*;
 import com.hmily.litespring.beans.factory.BeanDefinitionStoreException;
 import com.hmily.litespring.beans.factory.support.BeanDefinitionRegistry;
 import com.hmily.litespring.beans.factory.support.GenericBeanDefinition;
@@ -40,6 +37,11 @@ public class XmlBeanDefinitionReader {
 
     public static final String NAME_ATTRIBUTE="name";
 
+    public static final String CONSTRUCTOR_ARG_ELEMENT="constructor-arg";
+
+    public static final String TYPE_ATTRIBUTE="type";
+
+
     protected final Log logger= LogFactory.getLog(getClass());
 
     BeanDefinitionRegistry registry;
@@ -66,6 +68,7 @@ public class XmlBeanDefinitionReader {
                 if (ele.attribute(SCOPE_ATTRIBUTE)!=null){
                      bd.setScope(ele.attributeValue(SCOPE_ATTRIBUTE));
                 }
+                parseConstructorArgElements(ele,bd);
                 parsePropertyElement(ele,bd);
                 this.registry.registerBeanDefinition(id,bd);
             }
@@ -114,6 +117,29 @@ public class XmlBeanDefinitionReader {
         }else {
             throw new RuntimeException(elementName+" must specify a ref or value");
         }
+    }
+
+
+    public void parseConstructorArgElements(Element beanEle,BeanDefinition bd){
+        Iterator iter=beanEle.elementIterator(CONSTRUCTOR_ARG_ELEMENT);
+        while (iter.hasNext()){
+            Element ele= (Element) iter.next();
+            parseConstructorArgElement(ele,bd);
+        }
+    }
+
+    public void parseConstructorArgElement(Element element,BeanDefinition bd){
+        String typeAttr=element.attributeValue(TYPE_ATTRIBUTE);
+        String nameAttr=element.attributeValue(NAME_ATTRIBUTE);
+        Object value=parsePropertyValue(element,bd,null);
+        ConstructorArgument.ValueHolder valueHolder=new ConstructorArgument.ValueHolder(value);
+        if (StringUtils.hasLength(typeAttr)){
+            valueHolder.setType(typeAttr);
+        }
+        if (StringUtils.hasLength(nameAttr)){
+            valueHolder.setName(nameAttr);
+        }
+        bd.getConstructorArgument().addArgumentValue(valueHolder);
     }
 
 }

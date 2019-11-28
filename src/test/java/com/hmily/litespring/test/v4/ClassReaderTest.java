@@ -43,7 +43,7 @@ public class ClassReaderTest {
 
         AnnotationAttributes attributes = visitor.getAnnotationAttributes(annotation);
 
-        Assert.assertEquals("petStoreService", attributes.get("value"));
+        Assert.assertEquals("petStore", attributes.get("value"));
 
     }
 

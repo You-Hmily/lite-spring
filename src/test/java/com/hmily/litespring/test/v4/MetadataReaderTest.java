@@ -27,7 +27,7 @@ public class MetadataReaderTest {
 
         Assert.assertTrue(amd.hasAnnotation(annotation));
         AnnotationAttributes attributes = amd.getAnnotationAttributes(annotation);
-        Assert.assertEquals("petStoreService", attributes.get("value"));
+        Assert.assertEquals("petStore", attributes.get("value"));
 
         //注：下面对class metadata的测试并不充分
         Assert.assertFalse(amd.isAbstract());

@@ -6,15 +6,31 @@ import org.springframework.asm.SpringAsmInfo;
 
 import java.util.Map;
 
-public class AnnotationAttributesReadingVisitor extends AnnotationVisitor {
+final class AnnotationAttributesReadingVisitor extends AnnotationVisitor {
 
     private final String annotationType;
 
-    private final Map<String,AnnotationAttributes> annotationAttributesMap;
+    private final Map<String, AnnotationAttributes> attributesMap;
 
-    public AnnotationAttributesReadingVisitor(String annotationType, Map<String, AnnotationAttributes> attributesMap) {
+    AnnotationAttributes attributes = new AnnotationAttributes();
+
+
+    public AnnotationAttributesReadingVisitor(
+            String annotationType, Map<String, AnnotationAttributes> attributesMap) {
         super(SpringAsmInfo.ASM_VERSION);
+
         this.annotationType = annotationType;
-        this.annotationAttributesMap = attributesMap;
+        this.attributesMap = attributesMap;
+
     }
+    @Override
+    public final void visitEnd(){
+        this.attributesMap.put(this.annotationType, this.attributes);
+    }
+
+    public void visit(String attributeName, Object attributeValue) {
+        this.attributes.put(attributeName, attributeValue);
+    }
+
+
 }

@@ -7,7 +7,7 @@ import java.util.List;
  */
 public interface BeanDefinition {
 
-    public static final String SCOPE_SINGLTEON="singleton";
+    public static final String SCOPE_SINGLETON="singleton";
 
     public static final String SCOPE_PROTOTYPE="prototype";
 

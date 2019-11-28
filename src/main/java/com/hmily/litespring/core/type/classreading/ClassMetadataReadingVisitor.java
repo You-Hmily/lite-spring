@@ -74,4 +74,6 @@ public class ClassMetadataReadingVisitor extends ClassVisitor {
     public String[] getInterfaceNames() {
         return this.interfaces;
     }
+
+
 }

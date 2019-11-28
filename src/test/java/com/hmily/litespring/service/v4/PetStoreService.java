@@ -8,8 +8,9 @@ import com.hmily.litespring.stereotype.Component;
 /**
  * Created by zyzhmily on 2018/7/14.
  */
-@Component(value = "petStoreService")
+@Component(value = "petStore")
 public class PetStoreService {
+
     private AccountDao accountDao;
 
     private ItemDao itemDao;

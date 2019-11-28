@@ -2,6 +2,7 @@ package com.hmily.litespring.core.type.classreading;
 
 
 import com.hmily.litespring.core.annotation.AnnotationAttributes;
+import com.hmily.litespring.core.type.AnnotationMetadata;
 import org.springframework.asm.AnnotationVisitor;
 import org.springframework.asm.Type;
 
@@ -10,12 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.hmily.litespring.core.annotation.AnnotationAttributes;
-import com.hmily.litespring.core.type.AnnotationMetadata;
-import org.springframework.asm.AnnotationVisitor;
-import org.springframework.asm.Type;
-
-public class AnnotationMetadataReadingVisitor extends ClassMetadataReadingVisitor implements  AnnotationMetadata {
+public class AnnotationMetadataReadingVisitor extends ClassMetadataReadingVisitor implements AnnotationMetadata {
 
     private final Set<String> annotationSet = new LinkedHashSet<String>(4);
     private final Map<String, AnnotationAttributes> attributeMap = new LinkedHashMap<String, AnnotationAttributes>(4);

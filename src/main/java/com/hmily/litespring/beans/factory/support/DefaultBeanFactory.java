@@ -6,7 +6,7 @@ import com.hmily.litespring.beans.SimpleTypeConverter;
 import com.hmily.litespring.beans.factory.BeanCreationException;
 import com.hmily.litespring.beans.factory.BeanDefinitionStoreException;
 import com.hmily.litespring.beans.factory.BeanFactory;
-import com.hmily.litespring.beans.factory.config.ConfigurableBeanFactory;
+import com.hmily.litespring.beans.factory.config.*;
 import com.hmily.litespring.context.support.BeanDefinitionValueResolver;
 import com.hmily.litespring.util.ClassUtils;
 import org.dom4j.Document;
@@ -19,115 +19,145 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by zyzhmily on 2018/7/14.
  */
-public class DefaultBeanFactory extends DefaultSingletonBeanRegistry implements BeanDefinitionRegistry,ConfigurableBeanFactory{
+public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
+        implements ConfigurableBeanFactory,BeanDefinitionRegistry{
 
-    private Map<String,BeanDefinition> beanDefinitionMap=new ConcurrentHashMap<>();
+    private List<BeanPostProcessor> beanPostProcessors = new ArrayList<BeanPostProcessor>();
 
-    private ClassLoader classLoader;
+    private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<String, BeanDefinition>(64);
+    private ClassLoader beanClassLoader;
 
     public DefaultBeanFactory() {
-    }
 
-    @Override
+    }
+    public void addBeanPostProcessor(BeanPostProcessor postProcessor){
+        this.beanPostProcessors.add(postProcessor);
+    }
+    public List<BeanPostProcessor> getBeanPostProcessors() {
+        return this.beanPostProcessors;
+    }
+    public void registerBeanDefinition(String beanID,BeanDefinition bd){
+        this.beanDefinitionMap.put(beanID, bd);
+    }
     public BeanDefinition getBeanDefinition(String beanID) {
+
         return this.beanDefinitionMap.get(beanID);
     }
 
-    @Override
-    public void registerBeanDefinition(String benaID, BeanDefinition bd) {
-        this.beanDefinitionMap.put(benaID,bd);
-    }
-
-    @Override
     public Object getBean(String beanID) {
-        BeanDefinition bd=this.getBeanDefinition(beanID);
-        if (bd==null){
-            throw new BeanCreationException("Bean Definition does not exist");
+        BeanDefinition bd = this.getBeanDefinition(beanID);
+        if(bd == null){
+            return null;
         }
-        if (bd.isSingleton()){
-            Object bean=this.getSingleton(beanID);
-            if (bean==null){
-                 bean=createBean(bd);
-                this.regiterSingleton(beanID,bean);
+
+        if(bd.isSingleton()){
+            Object bean = this.getSingleton(beanID);
+            if(bean == null){
+                bean = createBean(bd);
+                this.registerSingleton(beanID, bean);
             }
             return bean;
         }
         return createBean(bd);
     }
-
-    private Object createBean(BeanDefinition bd){
+    private Object createBean(BeanDefinition bd) {
         //创建实例
-        Object value=instantiateBean(bd);
+        Object bean = instantiateBean(bd);
         //设置属性
-        populateBean(bd,value);
-        return value;
-    }
+        populateBean(bd, bean);
 
+        return bean;
+
+    }
     private Object instantiateBean(BeanDefinition bd) {
-        if (bd.hasConstructorArgumentValues()){
-            ConstructorResolver constructorResolver=new ConstructorResolver(this);
-            return constructorResolver.autowireConstructor(bd);
+        if(bd.hasConstructorArgumentValues()){
+            ConstructorResolver resolver = new ConstructorResolver(this);
+            return resolver.autowireConstructor(bd);
         }else{
-            ClassLoader cl= this.getBeanClassLoader();
-            String beanClassName=bd.getBeanClassName();
+            ClassLoader cl = this.getBeanClassLoader();
+            String beanClassName = bd.getBeanClassName();
             try {
-                Class<?> clz=cl.loadClass(beanClassName);
+                Class<?> clz = cl.loadClass(beanClassName);
                 return clz.newInstance();
             } catch (Exception e) {
-                throw  new BeanCreationException("create bean for "+beanClassName+" fail");
+                throw new BeanCreationException("create bean for "+ beanClassName +" failed",e);
             }
         }
     }
+    protected void populateBean(BeanDefinition bd, Object bean){
 
-    private void populateBean(BeanDefinition bd, Object value) {
-        List<PropertyValue> pvs=bd.getPropertyValues();
+        for(BeanPostProcessor processor : this.getBeanPostProcessors()){
+            if(processor instanceof InstantiationAwareBeanPostProcessor){
+                ((InstantiationAwareBeanPostProcessor)processor).postProcessPropertyValues(bean, bd.getID());
+            }
+        }
 
-        if (pvs==null||pvs.isEmpty()){
+        List<PropertyValue> pvs = bd.getPropertyValues();
+
+        if (pvs == null || pvs.isEmpty()) {
             return;
         }
-        BeanDefinitionValueResolver valueResolver=new BeanDefinitionValueResolver(this);
 
+        BeanDefinitionValueResolver valueResolver = new BeanDefinitionValueResolver(this);
+        SimpleTypeConverter converter = new SimpleTypeConverter();
         try{
-            for (PropertyValue pv:pvs){
-                String propertyName=pv.getName();
-                Object originalValue=pv.getValue();
-                Object resolvedValue=valueResolver.resolveValueIfNecessary(originalValue);
-                SimpleTypeConverter simpleTypeConverter=new SimpleTypeConverter();
-                //假设现在originalValue 表示的是ref=accountDao,已经通过resolve得到了accountDao对象
-                //接下来怎么办？如何去调用PetStore的setAccountDao方法？
-                BeanInfo beanInfo= Introspector.getBeanInfo(value.getClass());
-                PropertyDescriptor[] pds=beanInfo.getPropertyDescriptors();
-                for (PropertyDescriptor pd:pds){
-                    if (pd.getName().equals(propertyName)){
-                        Object convertValue=simpleTypeConverter.convertIfNecessary(resolvedValue,pd.getPropertyType());
-                        pd.getWriteMethod().invoke(value,convertValue);
+            for (PropertyValue pv : pvs){
+                String propertyName = pv.getName();
+                Object originalValue = pv.getValue();
+                Object resolvedValue = valueResolver.resolveValueIfNecessary(originalValue);
+
+                BeanInfo beanInfo = Introspector.getBeanInfo(bean.getClass());
+                PropertyDescriptor[] pds = beanInfo.getPropertyDescriptors();
+                for (PropertyDescriptor pd : pds) {
+                    if(pd.getName().equals(propertyName)){
+                        Object convertedValue = converter.convertIfNecessary(resolvedValue, pd.getPropertyType());
+                        pd.getWriteMethod().invoke(bean, convertedValue);
                         break;
                     }
                 }
+
+
             }
-        }catch (Exception e){
-         throw new BeanCreationException("Failed to obtain BeanInfo for class ["+bd.getBeanClassName()+"]");
+        }catch(Exception ex){
+            throw new BeanCreationException("Failed to obtain BeanInfo for class [" + bd.getBeanClassName() + "]", ex);
         }
-
     }
 
-
-    @Override
-    public void setBeanClassLoader(ClassLoader classLoader) {
-          this.classLoader=classLoader;
+    public void setBeanClassLoader(ClassLoader beanClassLoader) {
+        this.beanClassLoader = beanClassLoader;
     }
 
-    @Override
     public ClassLoader getBeanClassLoader() {
-        return this.classLoader!=null?this.classLoader:ClassUtils.getDefaultClassLoader();
+        return (this.beanClassLoader != null ? this.beanClassLoader : ClassUtils.getDefaultClassLoader());
+    }
+    public Object resolveDependency(DependencyDescriptor descriptor) {
+
+        Class<?> typeToMatch = descriptor.getDependencyType();
+        for(BeanDefinition bd: this.beanDefinitionMap.values()){
+            //确保BeanDefinition 有Class对象
+            resolveBeanClass(bd);
+            Class<?> beanClass = bd.getBeanClass();
+            if(typeToMatch.isAssignableFrom(beanClass)){
+                return this.getBean(bd.getID());
+            }
+        }
+        return null;
+    }
+    public void resolveBeanClass(BeanDefinition bd) {
+        if(bd.hasBeanClass()){
+            return;
+        } else{
+            try {
+                bd.resolveBeanClass(this.getBeanClassLoader());
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("can't load class:"+bd.getBeanClassName());
+            }
+        }
     }
 }

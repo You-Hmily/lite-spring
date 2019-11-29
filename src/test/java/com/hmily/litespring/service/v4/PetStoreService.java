@@ -1,6 +1,7 @@
 package com.hmily.litespring.service.v4;
 
 
+import com.hmily.litespring.beans.factory.annotation.Autowired;
 import com.hmily.litespring.dao.v4.AccountDao;
 import com.hmily.litespring.dao.v4.ItemDao;
 import com.hmily.litespring.stereotype.Component;
@@ -11,8 +12,10 @@ import com.hmily.litespring.stereotype.Component;
 @Component(value = "petStore")
 public class PetStoreService {
 
+    @Autowired
     private AccountDao accountDao;
 
+    @Autowired
     private ItemDao itemDao;
 
     private int version;
@@ -27,6 +30,10 @@ public class PetStoreService {
         this.accountDao = accountDao;
         this.itemDao = itemDao;
         this.version = version;
+    }
+
+    public PetStoreService() {
+
     }
 
     public AccountDao getAccountDao() {

@@ -1,14 +1,14 @@
 package com.hmily.litespring.beans.factory.config;
 
-import com.hmily.litespring.beans.factory.BeanFactory;
+
+import java.util.List;
 
 /**
  * Created by zyzhmily on 2018/7/15.
  */
-public interface ConfigurableBeanFactory extends BeanFactory{
-
-    public void setBeanClassLoader(ClassLoader classLoader);
-
-    public ClassLoader getBeanClassLoader();
-
+public interface ConfigurableBeanFactory extends AutowireCapableBeanFactory {
+    void setBeanClassLoader(ClassLoader beanClassLoader);
+    ClassLoader getBeanClassLoader();
+    void addBeanPostProcessor(BeanPostProcessor postProcessor);
+    List<BeanPostProcessor> getBeanPostProcessors();
 }

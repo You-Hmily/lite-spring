@@ -1,5 +1,7 @@
 package com.hmily.litespring.context.support;
 
+import com.hmily.litespring.beans.factory.annotation.AutowiredAnnotationProcessor;
+import com.hmily.litespring.beans.factory.config.ConfigurableBeanFactory;
 import com.hmily.litespring.beans.factory.support.DefaultBeanFactory;
 import com.hmily.litespring.beans.factory.xml.XmlBeanDefinitionReader;
 import com.hmily.litespring.context.ApplicationContext;
@@ -11,34 +13,37 @@ import com.hmily.litespring.util.ClassUtils;
  */
 public abstract class AbstractApplicationContext implements ApplicationContext{
 
-    private String path;
+    private DefaultBeanFactory factory = null;
+    private ClassLoader beanClassLoader;
 
-    private DefaultBeanFactory factory;
-
-    private ClassLoader classLoader;
-
-    public AbstractApplicationContext(String path) {
-        factory=new DefaultBeanFactory();
-        XmlBeanDefinitionReader reader=new XmlBeanDefinitionReader(factory);
-        Resource resource=this.getResource(path);
+    public AbstractApplicationContext(String configFile){
+        factory = new DefaultBeanFactory();
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
+        Resource resource = this.getResourceByPath(configFile);
         reader.loadBeanDefinitions(resource);
-        factory.setBeanClassLoader(this.classLoader);
+        factory.setBeanClassLoader(this.getBeanClassLoader());
+        registerBeanPostProcessors(factory);
     }
 
-    @Override
     public Object getBean(String beanID) {
+
         return factory.getBean(beanID);
     }
 
-    protected abstract Resource getResource(String path);
+    protected abstract Resource getResourceByPath(String path);
 
-    @Override
-    public void setBeanClassLoader(ClassLoader classLoader) {
-        this.classLoader=classLoader;
+    public void setBeanClassLoader(ClassLoader beanClassLoader) {
+        this.beanClassLoader = beanClassLoader;
     }
 
-    @Override
     public ClassLoader getBeanClassLoader() {
-        return this.classLoader!=null?this.classLoader: ClassUtils.getDefaultClassLoader();
+        return (this.beanClassLoader != null ? this.beanClassLoader : ClassUtils.getDefaultClassLoader());
+    }
+    protected void registerBeanPostProcessors(ConfigurableBeanFactory beanFactory) {
+
+        AutowiredAnnotationProcessor postProcessor = new AutowiredAnnotationProcessor();
+        postProcessor.setBeanFactory(beanFactory);
+        beanFactory.addBeanPostProcessor(postProcessor);
+
     }
 }

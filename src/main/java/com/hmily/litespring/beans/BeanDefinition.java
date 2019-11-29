@@ -30,4 +30,10 @@ public interface BeanDefinition {
     public String getID();
 
     public boolean hasConstructorArgumentValues();
+
+    Class<?> getBeanClass()throws IllegalStateException;
+
+    boolean hasBeanClass();
+
+    Class<?> resolveBeanClass(ClassLoader beanClassLoader) throws ClassNotFoundException;
 }

@@ -29,10 +29,11 @@
       <!-- 目录 ${project.basedir} 会直接指向当前项目 -->
       <systemPath>${project.basedir}/lib/spring-core-asm-3.2.18.RELEASE.jar</systemPath>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/junit/junit -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -45,10 +46,30 @@
       <artifactId>commons-logging</artifactId>
       <version>1.2</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/log4j/log4j -->
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.17</version>
+    </dependency>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjweaver</artifactId>
+      <version>1.8.13</version>
+    </dependency>
+    <dependency>
+      <groupId>aopalliance</groupId>
+      <artifactId>aopalliance</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-cglib</artifactId>
+      <version>3.2.18.RELEASE</version>
+      <!-- 这里这么写就好啦 -->
+      <scope>system</scope>
+      <!-- 目录 ${project.basedir} 会直接指向当前项目 -->
+      <systemPath>${project.basedir}/lib/spring-core-cglib-3.2.18.RELEASE.jar</systemPath>
     </dependency>
   </dependencies>
 

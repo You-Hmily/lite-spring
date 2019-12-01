@@ -1,6 +1,7 @@
 package com.hmily.litespring.beans.factory.support;
 
 import com.hmily.litespring.beans.BeanDefinition;
+import com.hmily.litespring.beans.NoSuchBeanDefinitionException;
 import com.hmily.litespring.beans.PropertyValue;
 import com.hmily.litespring.beans.SimpleTypeConverter;
 import com.hmily.litespring.beans.factory.BeanCreationException;
@@ -66,6 +67,17 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
         }
         return createBean(bd);
     }
+
+    @Override
+    public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
+        BeanDefinition bd = this.getBeanDefinition(name);
+        if(bd == null){
+            throw new NoSuchBeanDefinitionException(name);
+        }
+        resolveBeanClass(bd);
+        return bd.getBeanClass();
+    }
+
     private Object createBean(BeanDefinition bd) {
         //创建实例
         Object bean = instantiateBean(bd);

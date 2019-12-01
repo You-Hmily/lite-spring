@@ -1,5 +1,6 @@
 package com.hmily.litespring.context.support;
 
+import com.hmily.litespring.beans.NoSuchBeanDefinitionException;
 import com.hmily.litespring.beans.factory.annotation.AutowiredAnnotationProcessor;
 import com.hmily.litespring.beans.factory.config.ConfigurableBeanFactory;
 import com.hmily.litespring.beans.factory.support.DefaultBeanFactory;
@@ -45,5 +46,10 @@ public abstract class AbstractApplicationContext implements ApplicationContext{
         postProcessor.setBeanFactory(beanFactory);
         beanFactory.addBeanPostProcessor(postProcessor);
 
+    }
+
+    @Override
+    public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
+        return this.factory.getType(name);
     }
 }

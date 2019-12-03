@@ -1,12 +1,10 @@
 package com.hmily.litespring.beans.factory.support;
 
-import com.hmily.litespring.beans.BeanDefinition;
-import com.hmily.litespring.beans.NoSuchBeanDefinitionException;
-import com.hmily.litespring.beans.PropertyValue;
-import com.hmily.litespring.beans.SimpleTypeConverter;
+import com.hmily.litespring.beans.*;
 import com.hmily.litespring.beans.factory.BeanCreationException;
 import com.hmily.litespring.beans.factory.BeanDefinitionStoreException;
 import com.hmily.litespring.beans.factory.BeanFactory;
+import com.hmily.litespring.beans.factory.BeanFactoryAware;
 import com.hmily.litespring.beans.factory.config.*;
 import com.hmily.litespring.context.support.BeanDefinitionValueResolver;
 import com.hmily.litespring.util.ClassUtils;
@@ -26,8 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by zyzhmily on 2018/7/14.
  */
-public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
-        implements ConfigurableBeanFactory,BeanDefinitionRegistry{
+public class DefaultBeanFactory  extends AbstractBeanFactory implements BeanDefinitionRegistry{
 
     private List<BeanPostProcessor> beanPostProcessors = new ArrayList<BeanPostProcessor>();
 
@@ -50,6 +47,24 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
 
         return this.beanDefinitionMap.get(beanID);
     }
+    public List<Object> getBeansByType(Class<?> type){
+        List<Object> result = new ArrayList<Object>();
+        List<String> beanIDs = this.getBeanIDsByType(type);
+        for(String beanID : beanIDs){
+            result.add(this.getBean(beanID));
+        }
+        return result;
+    }
+
+    private List<String> getBeanIDsByType(Class<?> type){
+        List<String> result = new ArrayList<String>();
+        for(String beanName :this.beanDefinitionMap.keySet()){
+            if(type.isAssignableFrom(this.getType(beanName))){
+                result.add(beanName);
+            }
+        }
+        return result;
+    }
 
     public Object getBean(String beanID) {
         BeanDefinition bd = this.getBeanDefinition(beanID);
@@ -67,22 +82,13 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
         }
         return createBean(bd);
     }
-
-    @Override
-    public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
-        BeanDefinition bd = this.getBeanDefinition(name);
-        if(bd == null){
-            throw new NoSuchBeanDefinitionException(name);
-        }
-        resolveBeanClass(bd);
-        return bd.getBeanClass();
-    }
-
-    private Object createBean(BeanDefinition bd) {
+    protected Object createBean(BeanDefinition bd) {
         //创建实例
         Object bean = instantiateBean(bd);
         //设置属性
         populateBean(bd, bean);
+
+        bean = initializeBean(bd,bean);
 
         return bean;
 
@@ -140,6 +146,31 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
             throw new BeanCreationException("Failed to obtain BeanInfo for class [" + bd.getBeanClassName() + "]", ex);
         }
     }
+    protected Object initializeBean(BeanDefinition bd, Object bean)  {
+        invokeAwareMethods(bean);
+        //Todo，调用Bean的init方法，暂不实现
+        if(!bd.isSynthetic()){
+            return applyBeanPostProcessorsAfterInitialization(bean,bd.getID());
+        }
+        return bean;
+    }
+    public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
+            throws BeansException {
+
+        Object result = existingBean;
+        for (BeanPostProcessor beanProcessor : getBeanPostProcessors()) {
+            result = beanProcessor.afterInitialization(result, beanName);
+            if (result == null) {
+                return result;
+            }
+        }
+        return result;
+    }
+    private void invokeAwareMethods(final Object bean) {
+        if (bean instanceof BeanFactoryAware) {
+            ((BeanFactoryAware) bean).setBeanFactory(this);
+        }
+    }
 
     public void setBeanClassLoader(ClassLoader beanClassLoader) {
         this.beanClassLoader = beanClassLoader;
@@ -171,5 +202,13 @@ public class DefaultBeanFactory extends DefaultSingletonBeanRegistry
                 throw new RuntimeException("can't load class:"+bd.getBeanClassName());
             }
         }
+    }
+    public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
+        BeanDefinition bd = this.getBeanDefinition(name);
+        if(bd == null){
+            throw new NoSuchBeanDefinitionException(name);
+        }
+        resolveBeanClass(bd);
+        return bd.getBeanClass();
     }
 }

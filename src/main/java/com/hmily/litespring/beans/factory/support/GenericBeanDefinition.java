@@ -1,5 +1,6 @@
 package com.hmily.litespring.beans.factory.support;
 
+import com.hmily.litespring.aop.aspectj.AspectJExpressionPointcut;
 import com.hmily.litespring.beans.BeanDefinition;
 import com.hmily.litespring.beans.ConstructorArgument;
 import com.hmily.litespring.beans.PropertyValue;
@@ -20,6 +21,8 @@ public class GenericBeanDefinition implements BeanDefinition {
 
     List<PropertyValue> propertyValues = new ArrayList<PropertyValue>();
     private ConstructorArgument constructorArgument = new ConstructorArgument();
+    //表明这个Bean定义是不是我们litespring自己合成的。
+    private boolean isSynthetic = false;
 
     public GenericBeanDefinition(String id, String beanClassName) {
 
@@ -29,6 +32,20 @@ public class GenericBeanDefinition implements BeanDefinition {
     public GenericBeanDefinition() {
 
     }
+
+    public GenericBeanDefinition(Class<?> clz) {
+        this.beanClass = clz;
+        this.beanClassName = clz.getName();
+    }
+
+    public boolean isSynthetic() {
+        return isSynthetic;
+    }
+
+    public void setSynthetic(boolean isSynthetic) {
+        this.isSynthetic = isSynthetic;
+    }
+
     public String getBeanClassName() {
 
         return this.beanClassName;
@@ -92,4 +109,6 @@ public class GenericBeanDefinition implements BeanDefinition {
         this.beanClass = resolvedClass;
         return resolvedClass;
     }
+
+
 }

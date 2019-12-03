@@ -9,6 +9,8 @@ import com.hmily.litespring.context.ApplicationContext;
 import com.hmily.litespring.core.io.Resource;
 import com.hmily.litespring.util.ClassUtils;
 
+import java.util.List;
+
 /**
  * Created by zyzhmily on 2018/7/15.
  */
@@ -51,5 +53,9 @@ public abstract class AbstractApplicationContext implements ApplicationContext{
     @Override
     public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
         return this.factory.getType(name);
+    }
+
+    public List<Object> getBeansByType(Class<?> type){
+        return this.factory.getBeansByType(type);
     }
 }

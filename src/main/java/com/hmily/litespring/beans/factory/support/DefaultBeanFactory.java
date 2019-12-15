@@ -1,10 +1,13 @@
 package com.hmily.litespring.beans.factory.support;
 
+import com.hmily.litespring.aop.framework.CglibProxyFactory;
 import com.hmily.litespring.beans.*;
 import com.hmily.litespring.beans.factory.*;
 import com.hmily.litespring.beans.factory.config.*;
 import com.hmily.litespring.context.support.BeanDefinitionValueResolver;
 import com.hmily.litespring.util.ClassUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -22,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by zyzhmily on 2018/7/14.
  */
 public class DefaultBeanFactory  extends AbstractBeanFactory implements BeanDefinitionRegistry{
+
+    protected static final Log logger = LogFactory.getLog(DefaultBeanFactory.class);
 
     private List<BeanPostProcessor> beanPostProcessors = new ArrayList<BeanPostProcessor>();
 
@@ -57,7 +62,13 @@ public class DefaultBeanFactory  extends AbstractBeanFactory implements BeanDefi
     private List<String> getBeanIDsByType(Class<?> type){
         List<String> result = new ArrayList<String>();
         for(String beanName :this.beanDefinitionMap.keySet()){
-            if(type.isAssignableFrom(this.getType(beanName))){
+            Class<?> beanClass = null;
+            try {
+                beanClass = this.getType(beanName);
+            }catch (Exception e){
+                logger.warn("can not load class for bean:" + beanName + ",skip it.");
+            }
+            if(beanClass != null && type.isAssignableFrom(this.getType(beanName))){
                 result.add(beanName);
             }
         }

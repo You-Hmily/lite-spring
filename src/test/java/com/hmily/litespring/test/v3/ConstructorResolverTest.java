@@ -14,7 +14,7 @@ import java.lang.reflect.Constructor;
 /**
  * Created by zyzhmily on 2018/8/18.
  */
-public class ConstructorResolvlerTest {
+public class ConstructorResolverTest {
 
 
     @Test

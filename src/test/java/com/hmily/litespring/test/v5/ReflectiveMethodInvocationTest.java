@@ -134,7 +134,6 @@ public class ReflectiveMethodInvocationTest extends AbstractV5Test {
 			return;
 		}
 
-
 		Assert.fail("No Exception thrown");
 
 

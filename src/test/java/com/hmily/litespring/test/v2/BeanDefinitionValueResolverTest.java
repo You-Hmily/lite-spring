@@ -2,6 +2,7 @@ package com.hmily.litespring.test.v2;
 
 import com.hmily.litespring.beans.RuntimeBeanReference;
 import com.hmily.litespring.beans.TypeStringValue;
+import com.hmily.litespring.beans.factory.config.TypedStringValue;
 import com.hmily.litespring.beans.factory.support.DefaultBeanFactory;
 import com.hmily.litespring.beans.factory.xml.XmlBeanDefinitionReader;
 import com.hmily.litespring.context.support.BeanDefinitionValueResolver;
@@ -32,15 +33,15 @@ public class BeanDefinitionValueResolverTest {
 
     @Test
     public void testResolveTypedStringValue(){
-        DefaultBeanFactory factory=new DefaultBeanFactory();
-        XmlBeanDefinitionReader reader=new XmlBeanDefinitionReader(factory);
+        DefaultBeanFactory factory = new DefaultBeanFactory();
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(factory);
         reader.loadBeanDefinitions(new ClassPathResource("petstore-v2.xml"));
-        BeanDefinitionValueResolver resolver=new BeanDefinitionValueResolver(factory);
 
-        TypeStringValue stringValue=new TypeStringValue("test");
-        Object value=resolver.resolveValueIfNecessary(stringValue);
+        BeanDefinitionValueResolver resolver = new BeanDefinitionValueResolver(factory);
 
+        TypedStringValue stringValue = new TypedStringValue("test");
+        Object value = resolver.resolveValueIfNecessary(stringValue);
         Assert.assertNotNull(value);
-        Assert.assertEquals("test",value);
+        Assert.assertEquals("test", value);
     }
 }

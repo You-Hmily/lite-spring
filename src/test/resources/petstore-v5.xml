@@ -8,8 +8,7 @@
 			http://www.springframework.org/schema/context
 			http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:component-scan
-            base-package="com.hmily.litespring.service.v5,com.hmily.litespring.dao.v5">
+    <context:component-scan base-package="com.hmily.litespring.service.v5,com.hmily.litespring.dao.v5">
     </context:component-scan>
 
     <bean id="tx" class="com.hmily.litespring.tx.TransactionManager" />
@@ -24,7 +23,6 @@
             <aop:before pointcut-ref="placeOrder" method="start" />
             <aop:after-returning pointcut-ref="placeOrder"	method="commit" />
             <aop:after-throwing pointcut-ref="placeOrder" method = "rollback"/>
-
 
         </aop:aspect>
 

@@ -1,10 +1,7 @@
 package com.hmily.litespring.beans.factory.support;
 
 import com.hmily.litespring.beans.*;
-import com.hmily.litespring.beans.factory.BeanCreationException;
-import com.hmily.litespring.beans.factory.BeanDefinitionStoreException;
-import com.hmily.litespring.beans.factory.BeanFactory;
-import com.hmily.litespring.beans.factory.BeanFactoryAware;
+import com.hmily.litespring.beans.factory.*;
 import com.hmily.litespring.beans.factory.config.*;
 import com.hmily.litespring.context.support.BeanDefinitionValueResolver;
 import com.hmily.litespring.util.ClassUtils;
@@ -29,6 +26,7 @@ public class DefaultBeanFactory  extends AbstractBeanFactory implements BeanDefi
     private List<BeanPostProcessor> beanPostProcessors = new ArrayList<BeanPostProcessor>();
 
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<String, BeanDefinition>(64);
+
     private ClassLoader beanClassLoader;
 
     public DefaultBeanFactory() {
@@ -82,7 +80,7 @@ public class DefaultBeanFactory  extends AbstractBeanFactory implements BeanDefi
         }
         return createBean(bd);
     }
-    protected Object createBean(BeanDefinition bd) {
+    public Object createBean(BeanDefinition bd) {
         //创建实例
         Object bean = instantiateBean(bd);
         //设置属性
@@ -212,3 +210,4 @@ public class DefaultBeanFactory  extends AbstractBeanFactory implements BeanDefi
         return bd.getBeanClass();
     }
 }
+

@@ -8,27 +8,27 @@ import com.hmily.litespring.aop.config.AspectInstanceFactory;
 import java.lang.reflect.Method;
 
 public abstract class AbstractAspectJAdvice implements Advice {
-	
-	
-	protected Method adviceMethod;	
+
+
+	protected Method adviceMethod;
 	protected AspectJExpressionPointcut pointcut;
 	protected AspectInstanceFactory adviceObjectFactory;
-	
-	
-	
+
+
+
 	public AbstractAspectJAdvice(Method adviceMethod,
-                                 AspectJExpressionPointcut pointcut,
+								 AspectJExpressionPointcut pointcut,
 								 AspectInstanceFactory adviceObjectFactory){
-		
+
 		this.adviceMethod = adviceMethod;
 		this.pointcut = pointcut;
 		this.adviceObjectFactory = adviceObjectFactory;
 	}
-	
-	
+
+
 	public void invokeAdviceMethod() throws  Throwable{
-	
-		adviceMethod.invoke(adviceObjectFactory);
+
+		adviceMethod.invoke(adviceObjectFactory.getAspectInstance());
 	}
 	public Pointcut getPointcut(){
 		return this.pointcut;
@@ -36,7 +36,6 @@ public abstract class AbstractAspectJAdvice implements Advice {
 	public Method getAdviceMethod() {
 		return adviceMethod;
 	}
-
 	public Object getAdviceInstance() throws Exception {
 		return adviceObjectFactory.getAspectInstance();
 	}

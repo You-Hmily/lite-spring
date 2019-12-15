@@ -17,4 +17,6 @@ public interface BeanFactoryAware {
 	 */
 	void setBeanFactory(BeanFactory beanFactory) throws BeansException;
 
+
+
 }

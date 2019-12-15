@@ -21,20 +21,20 @@ import java.util.Set;
 
 
 public class AutowiredAnnotationProcessor implements InstantiationAwareBeanPostProcessor {
-	
+
 	private AutowireCapableBeanFactory beanFactory;
 	private String requiredParameterName = "required";
 	private boolean requiredParameterValue = true;
-	
+
 	private final Set<Class<? extends Annotation>> autowiredAnnotationTypes =
 			new LinkedHashSet<Class<? extends Annotation>>();
-	
+
 	public AutowiredAnnotationProcessor(){
 		this.autowiredAnnotationTypes.add(Autowired.class);
 	}
-	
+
 	public InjectionMetadata buildAutowiringMetadata(Class<?> clazz) {
-		
+
 		LinkedList<InjectionElement> elements = new LinkedList<InjectionElement>();
 		Class<?> targetClass = clazz;
 
@@ -44,7 +44,7 @@ public class AutowiredAnnotationProcessor implements InstantiationAwareBeanPostP
 				Annotation ann = findAutowiredAnnotation(field);
 				if (ann != null) {
 					if (Modifier.isStatic(field.getModifiers())) {
-						
+
 						continue;
 					}
 					boolean required = determineRequiredStatus(ann);
@@ -61,7 +61,7 @@ public class AutowiredAnnotationProcessor implements InstantiationAwareBeanPostP
 
 		return new InjectionMetadata(clazz, elements);
 	}
-	
+
 	protected boolean determineRequiredStatus(Annotation ann) {
 		try {
 			Method method = ReflectionUtils.findMethod(ann.annotationType(), this.requiredParameterName);
@@ -78,7 +78,7 @@ public class AutowiredAnnotationProcessor implements InstantiationAwareBeanPostP
 			return true;
 		}
 	}
-	
+
 	private Annotation findAutowiredAnnotation(AccessibleObject ao) {
 		for (Class<? extends Annotation> type : this.autowiredAnnotationTypes) {
 			Annotation ann = AnnotationUtils.getAnnotation(ao, type);
@@ -91,7 +91,6 @@ public class AutowiredAnnotationProcessor implements InstantiationAwareBeanPostP
 	public void setBeanFactory(AutowireCapableBeanFactory beanFactory){
 		this.beanFactory = beanFactory;
 	}
-
 	public Object beforeInitialization(Object bean, String beanName) throws BeansException {
 		//do nothing
 		return bean;
@@ -109,14 +108,14 @@ public class AutowiredAnnotationProcessor implements InstantiationAwareBeanPostP
 		return true;
 	}
 
-	public void postProcessPropertyValues(Object bean, String beanName) throws BeansException {		
+	public void postProcessPropertyValues(Object bean, String beanName) throws BeansException {
 		InjectionMetadata metadata = buildAutowiringMetadata(bean.getClass());
 		try {
 			metadata.inject(bean);
 		}
 		catch (Throwable ex) {
 			throw new BeanCreationException(beanName, "Injection of autowired dependencies failed", ex);
-		}		
+		}
 	}
 
 

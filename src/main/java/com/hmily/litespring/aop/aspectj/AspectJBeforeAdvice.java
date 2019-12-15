@@ -1,16 +1,14 @@
 package com.hmily.litespring.aop.aspectj;
 
-import com.hmily.litespring.aop.Advice;
-import com.hmily.litespring.aop.Pointcut;
+
 import com.hmily.litespring.aop.config.AspectInstanceFactory;
-import com.hmily.litespring.tx.TransactionManager;
 import org.aopalliance.intercept.MethodInvocation;
 
 import java.lang.reflect.Method;
 
 public class AspectJBeforeAdvice extends AbstractAspectJAdvice {
 
-    public AspectJBeforeAdvice(Method adviceMethod, AspectJExpressionPointcut pointcut, AspectInstanceFactory adviceObjectFactory){
+    public AspectJBeforeAdvice(Method adviceMethod,AspectJExpressionPointcut pointcut,AspectInstanceFactory adviceObjectFactory){
         super(adviceMethod,pointcut,adviceObjectFactory);
     }
 

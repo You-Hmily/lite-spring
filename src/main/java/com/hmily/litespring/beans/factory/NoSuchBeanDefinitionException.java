@@ -1,5 +1,6 @@
-package com.hmily.litespring.beans;
+package com.hmily.litespring.beans.factory;
 
+import com.hmily.litespring.beans.BeansException;
 import com.hmily.litespring.util.StringUtils;
 
 

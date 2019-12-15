@@ -1,6 +1,7 @@
 package com.hmily.litespring.context.support;
 
-import com.hmily.litespring.beans.NoSuchBeanDefinitionException;
+import com.hmily.litespring.aop.aspectj.AspectJAutoProxyCreator;
+import com.hmily.litespring.beans.factory.NoSuchBeanDefinitionException;
 import com.hmily.litespring.beans.factory.annotation.AutowiredAnnotationProcessor;
 import com.hmily.litespring.beans.factory.config.ConfigurableBeanFactory;
 import com.hmily.litespring.beans.factory.support.DefaultBeanFactory;
@@ -29,7 +30,6 @@ public abstract class AbstractApplicationContext implements ApplicationContext{
     }
 
     public Object getBean(String beanID) {
-
         return factory.getBean(beanID);
     }
 
@@ -43,10 +43,16 @@ public abstract class AbstractApplicationContext implements ApplicationContext{
         return (this.beanClassLoader != null ? this.beanClassLoader : ClassUtils.getDefaultClassLoader());
     }
     protected void registerBeanPostProcessors(ConfigurableBeanFactory beanFactory) {
-
-        AutowiredAnnotationProcessor postProcessor = new AutowiredAnnotationProcessor();
-        postProcessor.setBeanFactory(beanFactory);
-        beanFactory.addBeanPostProcessor(postProcessor);
+        {
+            AutowiredAnnotationProcessor postProcessor = new AutowiredAnnotationProcessor();
+            postProcessor.setBeanFactory(beanFactory);
+            beanFactory.addBeanPostProcessor(postProcessor);
+        }
+        {
+            AspectJAutoProxyCreator postProcessor = new AspectJAutoProxyCreator();
+            postProcessor.setBeanFactory(beanFactory);
+            beanFactory.addBeanPostProcessor(postProcessor);
+        }
 
     }
 

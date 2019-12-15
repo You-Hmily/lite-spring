@@ -59,16 +59,16 @@ public class CglibProxyFactory implements AopProxyFactory {
 
 	private Class<?>[] constructorArgTypes;
 
-	
 
-	
+
+
 	public CglibProxyFactory(AopConfig config) throws AopConfigException {
 		Assert.notNull(config, "AdvisedSupport must not be null");
 		if (config.getAdvices().size() == 0 /*&& config.getTargetSource() == AdvisedSupport.EMPTY_TARGET_SOURCE*/) {
 			throw new AopConfigException("No advisors and no TargetSource specified");
 		}
 		this.config = config;
-		
+
 	}
 
 	/**
@@ -100,14 +100,14 @@ public class CglibProxyFactory implements AopProxyFactory {
 
 		try {
 			Class<?> rootClass = this.config.getTargetClass();
-				
+
 			// Configure CGLIB Enhancer...
 			Enhancer enhancer = new Enhancer();
 			if (classLoader != null) {
-				enhancer.setClassLoader(classLoader);				
+				enhancer.setClassLoader(classLoader);
 			}
 			enhancer.setSuperclass(rootClass);
-			
+
 			enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE); //"BySpringCGLIB"
 			enhancer.setInterceptDuringConstruction(false);
 
@@ -116,7 +116,7 @@ public class CglibProxyFactory implements AopProxyFactory {
 			for (int x = 0; x < types.length; x++) {
 				types[x] = callbacks[x].getClass();
 			}
-			
+
 			enhancer.setCallbackFilter(new ProxyCallbackFilter(this.config));
 			enhancer.setCallbackTypes(types);
 			enhancer.setCallbacks(callbacks);
@@ -127,7 +127,7 @@ public class CglibProxyFactory implements AopProxyFactory {
 				proxy = enhancer.create(this.constructorArgTypes, this.constructorArgs);
 			}
 			else {*/
-				//proxy = enhancer.create();
+			//proxy = enhancer.create();
 			/*}*/
 
 			return proxy;
@@ -158,14 +158,14 @@ public class CglibProxyFactory implements AopProxyFactory {
 		return new Enhancer();
 	}*/
 
-	
+
 	private Callback[] getCallbacks(Class<?> rootClass) throws Exception {
-		
+
 		Callback aopInterceptor = new DynamicAdvisedInterceptor(this.config);
 
-	
+
 		//Callback targetInterceptor = new StaticUnadvisedExposedInterceptor(this.advised.getTargetObject());
-		
+
 		//Callback targetDispatcher = new StaticDispatcher(this.advised.getTargetObject());
 
 		Callback[] callbacks = new Callback[] {
@@ -176,7 +176,7 @@ public class CglibProxyFactory implements AopProxyFactory {
 				this.advisedDispatcher,  //DISPATCH_ADVISED
 				new EqualsInterceptor(this.advised),
 				new HashCodeInterceptor(this.advised)*/
-		};		
+		};
 
 		return callbacks;
 	}
@@ -215,11 +215,11 @@ public class CglibProxyFactory implements AopProxyFactory {
 		}
 
 		public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-			
-			
+
+
 			Object target = this.config.getTargetObject();
-			
-			
+
+
 			List<Advice> chain = this.config.getAdvices(method/*, targetClass*/);
 			Object retVal;
 			// Check whether we only have one InvokerInterceptor: that is,
@@ -232,23 +232,23 @@ public class CglibProxyFactory implements AopProxyFactory {
 				retVal = methodProxy.invoke(target, args);
 			}
 			else {
-				List<org.aopalliance.intercept.MethodInterceptor> interceptors = 
+				List<org.aopalliance.intercept.MethodInterceptor> interceptors =
 						new ArrayList<org.aopalliance.intercept.MethodInterceptor>();
-				
+
 				interceptors.addAll(chain);
-				
-				
+
+
 				// We need to create a method invocation...
 				retVal = new ReflectiveMethodInvocation(target, method, args, interceptors).proceed();
 			}
 			//retVal = processReturnType(proxy, target, method, retVal);
 			return retVal;
-			
+
 		}
 	}
 
 
-	
+
 
 	/**
 	 * CallbackFilter to assign Callbacks to methods.
@@ -257,18 +257,18 @@ public class CglibProxyFactory implements AopProxyFactory {
 
 		private final AopConfig config;
 
-		
+
 
 		public ProxyCallbackFilter(AopConfig advised) {
 			this.config = advised;
-			
+
 		}
 
-		
+
 		public int accept(Method method) {
 			// 注意，这里做了简化
 			return AOP_PROXY;
-			
+
 		}
 
 	}

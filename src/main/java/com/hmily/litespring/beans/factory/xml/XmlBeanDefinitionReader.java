@@ -75,9 +75,10 @@ public class XmlBeanDefinitionReader {
                     parseDefaultElement(ele); //普通的bean
                 } else if(this.isContextNamespace(namespaceUri)){
                     parseComponentElement(ele); //例如<context:component-scan>
-                }else if(this.isAOPNamespace(namespaceUri)){
+                }  else if(this.isAOPNamespace(namespaceUri)){
                     parseAOPElement(ele);  //例如 <aop:config>
                 }
+
 
             }
         } catch (Exception e) {
@@ -100,12 +101,10 @@ public class XmlBeanDefinitionReader {
         scanner.doScan(basePackages);
 
     }
-
     private void parseAOPElement(Element ele){
         ConfigBeanDefinitionParser parser = new ConfigBeanDefinitionParser();
         parser.parse(ele, this.registry);
     }
-
     private void parseDefaultElement(Element ele) {
         String id = ele.attributeValue(ID_ATTRIBUTE);
         String beanClassName = ele.attributeValue(CLASS_ATTRIBUTE);
@@ -127,7 +126,6 @@ public class XmlBeanDefinitionReader {
     public boolean isAOPNamespace(String namespaceUri){
         return (!StringUtils.hasLength(namespaceUri) || AOP_NAMESPACE_URI.equals(namespaceUri));
     }
-
 
     public void parseConstructorArgElements(Element beanEle, BeanDefinition bd) {
         Iterator iter = beanEle.elementIterator(CONSTRUCTOR_ARG_ELEMENT);
@@ -190,6 +188,7 @@ public class XmlBeanDefinitionReader {
             return ref;
         }else if (hasValueAttribute) {
             TypedStringValue valueHolder = new TypedStringValue(ele.attributeValue(VALUE_ATTRIBUTE));
+
             return valueHolder;
         }
         else {

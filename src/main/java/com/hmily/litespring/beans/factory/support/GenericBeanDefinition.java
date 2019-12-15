@@ -1,6 +1,5 @@
 package com.hmily.litespring.beans.factory.support;
 
-import com.hmily.litespring.aop.aspectj.AspectJExpressionPointcut;
 import com.hmily.litespring.beans.BeanDefinition;
 import com.hmily.litespring.beans.ConstructorArgument;
 import com.hmily.litespring.beans.PropertyValue;

@@ -1,8 +1,6 @@
 package com.hmily.litespring.context.support;
 
-import com.hmily.litespring.beans.factory.support.DefaultBeanFactory;
-import com.hmily.litespring.beans.factory.xml.XmlBeanDefinitionReader;
-import com.hmily.litespring.context.ApplicationContext;
+
 import com.hmily.litespring.core.io.FileSystemResource;
 import com.hmily.litespring.core.io.Resource;
 

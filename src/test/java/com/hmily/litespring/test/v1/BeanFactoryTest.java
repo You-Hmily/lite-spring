@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 public class BeanFactoryTest {
 
     DefaultBeanFactory factory=null;
+
     XmlBeanDefinitionReader reader=null;
 
     @Before
